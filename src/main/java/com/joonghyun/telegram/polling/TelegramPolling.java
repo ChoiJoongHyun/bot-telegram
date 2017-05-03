@@ -31,7 +31,6 @@ public class TelegramPolling extends TelegramLongPollingBot {
                 logger.error("TelegramApiException - {}", e);
             }
         }
-
     }
 
     @Override
