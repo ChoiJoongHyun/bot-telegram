@@ -9,6 +9,8 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Created by joonghyun on 2017. 5. 3..
  */
@@ -24,7 +26,12 @@ public class TelegramPolling extends TelegramLongPollingBot {
             try {
                 logger.info("update toString : " + update.toString());
 
-                String value = messageDispatch.message(update.getMessage().getChatId(), update.toString());
+                String value = null;
+                try {
+                    value = messageDispatch.message(update.getMessage().getChatId(), update.toString());
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
 
                 SendMessage message = new SendMessage() // Create a SendMessage
                         // object with mandatory

@@ -51,7 +51,7 @@ public class MessageDispatch {
         }
     }
 
-    final static Map<String, Commander> commanderMap = new HashMap<>();
+    private final static Map<String, Commander> commanderMap = new HashMap<>();
 
     private static class Commander {
         private String name;
@@ -67,27 +67,29 @@ public class MessageDispatch {
         String execute(String msg) throws InvocationTargetException, IllegalAccessException {
             return (String) this.method.invoke(this.beanFactory.getBean(this.name), msg);
         }
+        String execute() throws InvocationTargetException, IllegalAccessException {
+            return (String) this.method.invoke(this.beanFactory.getBean(this.name));
+        }
     }
 
+   
 
 
 
-    public String message(Long romeKey, String msg) {
+
+    public String message(Long romeKey, String msg) throws InvocationTargetException, IllegalAccessException {
         logger.debug("message start");
 
+        String resultMsg;
+
         if("#wakeup!".equals(msg)) {
-            redisHelper.delete(String.valueOf(romeKey));
-            redisHelper.push(String.valueOf(romeKey) , msg);
+            return commanderMap.get("wakeup").execute();
         }
 
-        try {
-            commanderMap.get("conference").execute(msg);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        resultMsg = commanderMap.get("conference").execute(msg);
 
 
-        return msg;
+        return resultMsg;
     }
 
 

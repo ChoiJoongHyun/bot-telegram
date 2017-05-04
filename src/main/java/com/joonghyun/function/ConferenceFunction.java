@@ -3,6 +3,8 @@ package com.joonghyun.function;
 import com.joonghyun.anotation.Command;
 import com.joonghyun.anotation.Function;
 import com.joonghyun.bot.conference.service.ConferenceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,16 +14,22 @@ import org.springframework.stereotype.Component;
 @Function
 public class ConferenceFunction {
 
+    private static final Logger log = LoggerFactory.getLogger(ConferenceFunction.class);
     @Autowired
     private ConferenceService conferenceService;
+
+    public class Message {
+        public static final String CONFERENCE = "회의실과 날짜를 입력해 주세요" +
+                "\n날짜를 입력하지 않으면 오늘날짜로 자동 입력 됩니다." +
+                "\nex) C601, 20170505" +
+                "\nex) C601";
+    }
 
     @Command(value="회의실", function = "conference", parent = "wakeup")
     public String conference(String msg) {
 
-        return "회의실과 날짜를 입력해 주세요" +
-                "\n날짜를 입력하지 않으면 오늘날짜로 자동 입력 됩니다." +
-                "\nex) C601, 20170505 " +
-                "\nex) C601";
+
+        return Message.CONFERENCE;
     }
 
     @Command(function = "conferenceList", parent = "conference")
