@@ -16,7 +16,7 @@ public class ConferenceFunction {
     private ConferenceService conferenceService;
 
     @Command(value="회의실", function = "conference", parent = "wakeup")
-    public String conference() {
+    public String conference(String msg) {
 
         return "회의실과 날짜를 입력해 주세요" +
                 "\n날짜를 입력하지 않으면 오늘날짜로 자동 입력 됩니다." +
@@ -25,13 +25,13 @@ public class ConferenceFunction {
     }
 
     @Command(function = "conferenceList", parent = "conference")
-    public String conferenceList() {
+    public String conferenceList(String msg) {
 
         return "conferenceList 예약, 취소";
     }
 
     @Command(value = "예약", function = "conferenceReserveList", parent = "conferenceList")
-    public String conferenceReserveList() {
+    public String conferenceReserveList(String msg) {
         //예약 가능 목록 리스트
 
         return "예약 가능 리스트" +
@@ -39,7 +39,7 @@ public class ConferenceFunction {
     }
 
     @Command(function = "reserve", parent = "conferenceReserveList")
-    public String reserve() {
+    public String reserve(String msg) {
         //param ex ) t1, 이름, R&D회의
 
         return "예약 완료하였습니다";
@@ -47,7 +47,7 @@ public class ConferenceFunction {
 
 
     @Command(value = "취소", function = "conferenceCancelList", parent = "conferenceList")
-    public String conferenceCancelList() {
+    public String conferenceCancelList(String msg) {
         //취소 가능 목록 리스트
 
         return "취소 목록 리스트, " +
@@ -55,7 +55,7 @@ public class ConferenceFunction {
     }
 
     @Command(function = "cancel", parent = "conferenceCancelList")
-    public String cancel() {
+    public String cancel(String msg) {
         //param ex ) t1, 이름, 회의취소
 
         return "취소 완료하였습니다";

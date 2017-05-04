@@ -1,7 +1,9 @@
-package com.joonghyun.controller;
+package com.joonghyun.dispatch;
 
 import com.joonghyun.anotation.Command;
+import com.joonghyun.anotation.Function;
 import com.joonghyun.helper.RedisHelper;
+import org.apache.commons.lang3.text.WordUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -9,11 +11,15 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by joonghyun on 2017. 5. 3..
@@ -24,6 +30,9 @@ public class MessageDispatch {
 
     @Autowired
     private RedisHelper redisHelper;
+
+    @Autowired
+    private BeanFactory beanFactory;
 
     @PostConstruct
     public void init(){
@@ -36,20 +45,47 @@ public class MessageDispatch {
                 if (method.isAnnotationPresent(Command.class)) {
                     Command command = method.getAnnotation(Command.class);
                     logger.info("command : {}", command.function());
-                    
+                    commanderMap.put(command.function(), new Commander(WordUtils.uncapitalize(clazz.getSimpleName()), method, beanFactory));
                 }
             }
         }
     }
 
+    final static Map<String, Commander> commanderMap = new HashMap<>();
+
+    private static class Commander {
+        private String name;
+        private BeanFactory beanFactory;
+        private Method method;
+
+        Commander(String name, Method method, BeanFactory beanFactory){
+            this.name = name;
+            this.method = method;
+            this.beanFactory = beanFactory;
+        }
+
+        String execute(String msg) throws InvocationTargetException, IllegalAccessException {
+            return (String) this.method.invoke(this.beanFactory.getBean(this.name), msg);
+        }
+    }
+
+
+
 
     public String message(Long romeKey, String msg) {
+        logger.debug("message start");
 
         if("#wakeup!".equals(msg)) {
             redisHelper.delete(String.valueOf(romeKey));
             redisHelper.push(String.valueOf(romeKey) , msg);
-
         }
+
+        try {
+            commanderMap.get("conference").execute(msg);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
 
         return msg;
     }

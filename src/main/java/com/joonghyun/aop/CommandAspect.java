@@ -18,11 +18,11 @@ public class CommandAspect {
 
     @Around("@annotation(com.joonghyun.anotation.Command)")
     public Object redisCheck(ProceedingJoinPoint joinPoint) throws Throwable {
-        log.debug("redisCheck start go go~");
+        log.info("redisCheck start go go~");
 
         Object object = joinPoint.proceed();
 
-        log.debug("redisCheck end");
+        log.info("redisCheck end");
         return object;
     }
 
