@@ -3,6 +3,7 @@ package com.joonghyun.function;
 import com.joonghyun.anotation.Command;
 import com.joonghyun.anotation.Function;
 import com.joonghyun.bot.conference.service.ConferenceService;
+import com.joonghyun.model.request.MessageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +35,16 @@ public class ConferenceFunction {
     }
 
     @Command(msg="회의실", function = "conference", parent = "wakeup")
-    public String conference(String msg) {
-        log.debug("conference start msg : {}", msg);
+    public String conference(MessageRequest messageRequest) {
+        log.debug("conference start messageRequest : {}", messageRequest.toString());
 
 
         return Message.CONFERENCE;
     }
 
     @Command(function = "conferenceList", parent = "conference")
-    public String conferenceList(String msg) {
-        log.debug("conferenceList start msg : {}", msg);
+    public String conferenceList(MessageRequest messageRequest) {
+        log.debug("conferenceList start messageRequest : {}", messageRequest.toString());
 
 
         //전체리스트 +
@@ -51,8 +52,8 @@ public class ConferenceFunction {
     }
 
     @Command(msg = "예약", function = "conferenceReserveList", parent = "conferenceList")
-    public String conferenceReserveList(String msg) {
-        log.debug("conferenceReserveList start msg : {}", msg);
+    public String conferenceReserveList(MessageRequest messageRequest) {
+        log.debug("conferenceReserveList start messageRequest : {}", messageRequest.toString());
 
 
         //예약 가능 목록 리스트 +
@@ -60,8 +61,8 @@ public class ConferenceFunction {
     }
 
     @Command(function = "reserve", parent = "conferenceReserveList")
-    public String reserve(String msg) {
-        log.debug("reserve start msg : {}", msg);
+    public String reserve(MessageRequest messageRequest) {
+        log.debug("reserve start messageRequest : {}", messageRequest.toString());
         //param ex ) t1, 이름, R&D회의
 
         return Message.CONFERENCE_RESERVE_SUCC;
@@ -69,8 +70,8 @@ public class ConferenceFunction {
 
 
     @Command(msg = "취소", function = "conferenceCancelList", parent = "conferenceList")
-    public String conferenceCancelList(String msg) {
-        log.debug("conferenceCancelList start msg : {}", msg);
+    public String conferenceCancelList(MessageRequest messageRequest) {
+        log.debug("conferenceCancelList start messageRequest : {}", messageRequest.toString());
         //취소 가능 목록 리스트
 
         //예약 가능 목록 리스트 +
@@ -78,8 +79,8 @@ public class ConferenceFunction {
     }
 
     @Command(function = "cancel", parent = "conferenceCancelList")
-    public String cancel(String msg) {
-        log.debug("conferenceReserveList start msg : {}", msg);
+    public String cancel(MessageRequest messageRequest) {
+        log.debug("conferenceReserveList start messageRequest : {}", messageRequest.toString());
         //param ex ) t1, 이름, 회의취소
 
         return Message.CONFERENCE_CANCEL_SUCC;

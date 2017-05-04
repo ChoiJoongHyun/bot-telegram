@@ -2,6 +2,7 @@ package com.joonghyun.function;
 
 import com.joonghyun.anotation.Command;
 import com.joonghyun.anotation.Function;
+import com.joonghyun.model.request.MessageRequest;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,7 +18,7 @@ public class WakeupFunction {
 
 
     @Command(msg = "#wakeup!", function = "wakeup")
-    public String wakeup() {
+    public String wakeup(MessageRequest messageRequest) {
 
         return Message.WAKEUP;
     }

@@ -3,6 +3,7 @@ package com.joonghyun.dispatch;
 import com.joonghyun.anotation.Command;
 import com.joonghyun.helper.RedisHelper;
 import com.joonghyun.model.converstation.ConversationInfo;
+import com.joonghyun.model.request.MessageRequest;
 import com.joonghyun.utils.ConversationUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.reflections.Reflections;
@@ -74,12 +75,8 @@ public class MessageDispatch {
             this.beanFactory = beanFactory;
         }
 
-        String execute(String msg) throws InvocationTargetException, IllegalAccessException {
-            return (String) this.method.invoke(this.beanFactory.getBean(this.name), msg);
-        }
-
-        String execute() throws InvocationTargetException, IllegalAccessException {
-            return (String) this.method.invoke(this.beanFactory.getBean(this.name));
+        String execute(MessageRequest messageRequest) throws InvocationTargetException, IllegalAccessException {
+            return (String) this.method.invoke(this.beanFactory.getBean(this.name), messageRequest);
         }
     }
 
@@ -114,26 +111,25 @@ public class MessageDispatch {
         //redis check
         ConversationInfo conversationInfo = ConversationUtils.stringToObject(redisHelper.peek(String.valueOf(romeKey)));
 
+        MessageRequest messageRequest = new MessageRequest(String.valueOf(romeKey), msg);
+
         if(conversationInfo == null) {
             if(!"#wakeup!".equals(msg)) {
                 return msg;
             }
-
-            //TODO aop go
-            redisHelper.delete(String.valueOf(romeKey));
-            ConversationInfo cs = ConversationUtils.paramToObject("wakeup");
-            redisHelper.push(String.valueOf(romeKey), ConversationUtils.objectToString(cs));
-
-            return commanderMap.get("wakeup").execute();
+            return commanderMap.get("wakeup").execute(messageRequest);
         }
 
         Conversation conversation = conversationMap.get(conversationInfo.getFunction());
-        if(conversation.getFunctionMap().containsKey("")) {
-
-            return commanderMap.get(conversation.getFunctionMap().get("")).execute("test");
+        if(conversation == null) {
+            return null;
         }
-        
-        return commanderMap.get(conversation.getFunctionMap().get(msg)).execute("test");
+
+        if(conversation.getFunctionMap().containsKey("")) {
+            return commanderMap.get(conversation.getFunctionMap().get("")).execute(messageRequest);
+        }
+
+        return commanderMap.get(conversation.getFunctionMap().get(msg)).execute(messageRequest);
     }
 
 

@@ -26,19 +26,23 @@ public class TelegramPolling extends TelegramLongPollingBot {
             try {
                 logger.info("update toString : " + update.toString());
 
-                String value = null;
+                String resultMsg = null;
                 try {
-                    value = messageDispatch.message(update.getMessage().getChatId(), update.toString());
+                    resultMsg = messageDispatch.message(update.getMessage().getChatId(), update.getMessage().getText());
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
 
-                SendMessage message = new SendMessage() // Create a SendMessage
-                        // object with mandatory
-                        // fields
-                        //.setChatId(update.getMessage().getChatId()).setText(update.getMessage().getText());
-                        .setChatId(update.getMessage().getChatId()).setText(value);
-                sendMessage(message);
+                if(resultMsg != null) {
+                    logger.info("resultMsg : {}", resultMsg);
+
+                    SendMessage message = new SendMessage() // Create a SendMessage
+                            // object with mandatory
+                            // fields
+                            //.setChatId(update.getMessage().getChatId()).setText(update.getMessage().getText());
+                            .setChatId(update.getMessage().getChatId()).setText(resultMsg);
+                    sendMessage(message);
+                }
             } catch (TelegramApiException e) {
                 logger.error("TelegramApiException - {}", e);
             }
