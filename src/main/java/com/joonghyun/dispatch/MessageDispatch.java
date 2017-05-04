@@ -1,8 +1,9 @@
 package com.joonghyun.dispatch;
 
 import com.joonghyun.anotation.Command;
-import com.joonghyun.anotation.Function;
 import com.joonghyun.helper.RedisHelper;
+import com.joonghyun.model.converstation.ConversationInfo;
+import com.joonghyun.utils.ConversationUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -26,7 +27,7 @@ import java.util.Map;
  */
 @Component
 public class MessageDispatch {
-    private static final Logger logger = LoggerFactory.getLogger(MessageDispatch.class);
+    private static final Logger log = LoggerFactory.getLogger(MessageDispatch.class);
 
     @Autowired
     private RedisHelper redisHelper;
@@ -36,7 +37,6 @@ public class MessageDispatch {
 
     @PostConstruct
     public void init(){
-        logger.info("command start");
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage("com.joonghyun.function")).setScanners(
                         new TypeAnnotationsScanner(), new SubTypesScanner()));
@@ -44,15 +44,25 @@ public class MessageDispatch {
             for (Method method : clazz.getMethods()) {
                 if (method.isAnnotationPresent(Command.class)) {
                     Command command = method.getAnnotation(Command.class);
-                    logger.info("command : {}", command.function());
+                    log.info("command msg : {}, function : {}, parent : {}", command.msg(), command.function(), command.parent());
                     commanderMap.put(command.function(), new Commander(WordUtils.uncapitalize(clazz.getSimpleName()), method, beanFactory));
+
+                    if(command.parent().isEmpty()) {
+                        continue;
+                    }
+
+                    Conversation conversation = conversationMap.get(command.parent());
+                    if(conversation == null) {
+                        conversationMap.put(command.parent(), new Conversation(command.msg(), command.function()));
+                    } else {
+                        conversation.putFunctionMap(command.msg(), command.function());
+                    }
                 }
             }
         }
     }
 
     private final static Map<String, Commander> commanderMap = new HashMap<>();
-
     private static class Commander {
         private String name;
         private BeanFactory beanFactory;
@@ -67,29 +77,63 @@ public class MessageDispatch {
         String execute(String msg) throws InvocationTargetException, IllegalAccessException {
             return (String) this.method.invoke(this.beanFactory.getBean(this.name), msg);
         }
+
         String execute() throws InvocationTargetException, IllegalAccessException {
             return (String) this.method.invoke(this.beanFactory.getBean(this.name));
         }
     }
 
-   
+    private static final Map<String, Conversation> conversationMap = new HashMap<>();
+    private static class Conversation {
+        private Map<String, String> functionMap;    //key : msg, value : function
+        Conversation(String msg, String function) {
+            functionMap =  new HashMap<>();
+            functionMap.put(msg, function);
+        }
+
+        public void putFunctionMap(String msg, String function) {
+            this.functionMap.put(msg, function);
+        }
+
+        public Map<String, String> getFunctionMap() {
+            return functionMap;
+        }
+    }
+
+
 
 
 
 
     public String message(Long romeKey, String msg) throws InvocationTargetException, IllegalAccessException {
-        logger.debug("message start");
+        log.debug("message start romeKey : {}, msg : {}", romeKey, msg);
+        for(String key : conversationMap.keySet()) {
+            log.debug("parentKey : {}, msg-function : {}", key, conversationMap.get(key).getFunctionMap().toString());
+        }
 
-        String resultMsg;
+        //redis check
+        ConversationInfo conversationInfo = ConversationUtils.stringToObject(redisHelper.peek(String.valueOf(romeKey)));
 
-        if("#wakeup!".equals(msg)) {
+        if(conversationInfo == null) {
+            if(!"#wakeup!".equals(msg)) {
+                return msg;
+            }
+
+            //TODO aop go
+            redisHelper.delete(String.valueOf(romeKey));
+            ConversationInfo cs = ConversationUtils.paramToObject("wakeup");
+            redisHelper.push(String.valueOf(romeKey), ConversationUtils.objectToString(cs));
+
             return commanderMap.get("wakeup").execute();
         }
 
-        resultMsg = commanderMap.get("conference").execute(msg);
+        Conversation conversation = conversationMap.get(conversationInfo.getFunction());
+        if(conversation.getFunctionMap().containsKey("")) {
 
-
-        return resultMsg;
+            return commanderMap.get(conversation.getFunctionMap().get("")).execute("test");
+        }
+        
+        return commanderMap.get(conversation.getFunctionMap().get(msg)).execute("test");
     }
 
 

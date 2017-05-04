@@ -16,7 +16,7 @@ public class WakeupFunction {
 
 
 
-    @Command(value = "#wakeup!", function = "wakeup")
+    @Command(msg = "#wakeup!", function = "wakeup")
     public String wakeup() {
 
         return Message.WAKEUP;
