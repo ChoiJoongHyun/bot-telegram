@@ -4,16 +4,16 @@ package com.joonghyun.model.request;
  * Created by joonghyun on 2017. 5. 4..
  */
 public class MessageRequest {
-    private String romeKey;
+    private String roomKey;
     private String msg;
 
-    public MessageRequest(String romeKey, String msg) {
-        this.romeKey = romeKey;
+    public MessageRequest(String roomKey, String msg) {
+        this.roomKey = roomKey;
         this.msg = msg;
     }
 
-    public String getRomeKey() {
-        return romeKey;
+    public String getRoomKey() {
+        return roomKey;
     }
 
     public String getMsg() {
@@ -23,7 +23,7 @@ public class MessageRequest {
     @Override
     public String toString() {
         return "MessageRequest{" +
-                "romeKey='" + romeKey + '\'' +
+                "roomKey='" + roomKey + '\'' +
                 ", msg='" + msg + '\'' +
                 '}';
     }

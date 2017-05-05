@@ -1,6 +1,7 @@
 package com.joonghyun.dispatch;
 
 import com.joonghyun.anotation.Command;
+import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.helper.RedisHelper;
 import com.joonghyun.model.converstation.ConversationInfo;
 import com.joonghyun.model.request.MessageRequest;
@@ -102,34 +103,51 @@ public class MessageDispatch {
 
 
 
-    public String message(Long romeKey, String msg) throws InvocationTargetException, IllegalAccessException {
-        log.debug("message start romeKey : {}, msg : {}", romeKey, msg);
-        for(String key : conversationMap.keySet()) {
-            log.debug("parentKey : {}, msg-function : {}", key, conversationMap.get(key).getFunctionMap().toString());
-        }
+    public String message(Long roomKey, String msg) {
 
-        //redis check
-        ConversationInfo conversationInfo = ConversationUtils.stringToObject(redisHelper.peek(String.valueOf(romeKey)));
-
-        MessageRequest messageRequest = new MessageRequest(String.valueOf(romeKey), msg);
-
-        if(conversationInfo == null) {
-            if(!"#wakeup!".equals(msg)) {
-                return msg;
+        try {
+            log.debug("message start roomKey : {}, msg : {}", roomKey, msg);
+            for(String key : conversationMap.keySet()) {
+                log.debug("parentKey : {}, msg-function : {}", key, conversationMap.get(key).getFunctionMap().toString());
             }
-            return commanderMap.get("wakeup").execute(messageRequest);
-        }
 
-        Conversation conversation = conversationMap.get(conversationInfo.getFunction());
-        if(conversation == null) {
+            //redis check
+            ConversationInfo conversationInfo = ConversationUtils.stringToObject(redisHelper.peek(String.valueOf(roomKey)));
+
+            MessageRequest messageRequest = new MessageRequest(String.valueOf(roomKey), msg);
+
+            if(conversationInfo == null) {
+                if(!"#wakeup!".equals(msg)) {
+                    return null;
+                }
+                return commanderMap.get("wakeup").execute(messageRequest);
+            }
+
+            //최 하위 기능을 사용하였을경우 parent 값이 없으므로 null 이 되며 TODO redis 초기화 하면 될것 같다.
+            Conversation conversation = conversationMap.get(conversationInfo.getFunction());
+            if(conversation == null) {
+                return null;
+            }
+
+            //예약어가 아닐경우 모든 메세지 입력 가능
+            if(conversation.getFunctionMap().containsKey("")) {
+                return commanderMap.get(conversation.getFunctionMap().get("")).execute(messageRequest);
+            }
+
+            //예약어를 입력해야 할 경우
+            Commander commander = commanderMap.get(conversation.getFunctionMap().get(msg));
+            if(commander == null) {
+                return null;
+            }
+            return commander.execute(messageRequest);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            log.error("InvocationTargetException or IllegalAccessException : {}", e);
             return null;
+        } catch (UserHandlerException ue) {
+            log.error("UserHandlerException code : {}, msg : {}",ue.getCode().getCode(), ue.getCode().getMessage());
+            return ue.getCode().getMessage();
         }
 
-        if(conversation.getFunctionMap().containsKey("")) {
-            return commanderMap.get(conversation.getFunctionMap().get("")).execute(messageRequest);
-        }
-
-        return commanderMap.get(conversation.getFunctionMap().get(msg)).execute(messageRequest);
     }
 
 

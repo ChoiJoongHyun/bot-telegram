@@ -26,12 +26,7 @@ public class TelegramPolling extends TelegramLongPollingBot {
             try {
                 logger.info("update toString : " + update.toString());
 
-                String resultMsg = null;
-                try {
-                    resultMsg = messageDispatch.message(update.getMessage().getChatId(), update.getMessage().getText());
-                } catch (InvocationTargetException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+                String resultMsg = messageDispatch.message(update.getMessage().getChatId(), update.getMessage().getText());
 
                 if(resultMsg != null) {
                     logger.info("resultMsg : {}", resultMsg);

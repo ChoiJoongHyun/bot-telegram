@@ -22,25 +22,25 @@ public class RedisHelper {
     @Resource(name="strRedisTemplate")
     private ListOperations<String, String> listOperations;
 
-    public void push(String romeKey, String value) {
-        log.debug("Redis push romeKey : {}, value : {} ", romeKey, value);
-        listOperations.rightPush(romeKey, value);
+    public void push(String roomKey, String value) {
+        log.debug("Redis push roomKey : {}, value : {} ", roomKey, value);
+        listOperations.rightPush(roomKey, value);
     }
 
-    public String pop(String romeKey) {
-        String value = listOperations.rightPop(romeKey);
-        log.debug("Redis pop romeKey : {}, value : {} ", romeKey, value);
+    public String pop(String roomKey) {
+        String value = listOperations.rightPop(roomKey);
+        log.debug("Redis pop roomKey : {}, value : {} ", roomKey, value);
         return value;
     }
 
-    public String peek(String romeKey) {
-        String value = listOperations.index(romeKey, listOperations.size(romeKey) - 1);
-        log.debug("Redis peek romeKey : {}, value : {} ", romeKey, value);
+    public String peek(String roomKey) {
+        String value = listOperations.index(roomKey, listOperations.size(roomKey) - 1);
+        log.debug("Redis peek roomKey : {}, value : {} ", roomKey, value);
         return value;
     }
 
-    public void delete(String romeKey) {
-        log.debug("Redis delete romeKey : {}", romeKey);
-        redisTemplate.opsForValue().getOperations().delete(romeKey);
+    public void delete(String roomKey) {
+        log.debug("Redis delete roomKey : {}", roomKey);
+        redisTemplate.opsForValue().getOperations().delete(roomKey);
     }
 }

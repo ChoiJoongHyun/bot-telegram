@@ -2,6 +2,8 @@ package com.joonghyun.aop;
 
 import com.joonghyun.anotation.Command;
 import com.joonghyun.dispatch.MessageDispatch;
+import com.joonghyun.error.Code;
+import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.helper.RedisHelper;
 import com.joonghyun.model.converstation.ConversationInfo;
 import com.joonghyun.model.request.MessageRequest;
@@ -29,36 +31,32 @@ public class CommandAspect {
 
     @Around("@annotation(com.joonghyun.anotation.Command)")
     public Object redisCheck(ProceedingJoinPoint joinPoint) throws Throwable {
-        log.info("redisCheck start go go~");
-
-
         Command command = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(Command.class);
 
         if(command == null) {
-            throw new RuntimeException("command is null");
+            throw new UserHandlerException(Code.NO_EXIST_COMMAND);
         }
 
-        String romeKey = null;
+        String roomKey = null;
         for(Object obj : joinPoint.getArgs()) {
             if(obj instanceof MessageRequest) {
-                romeKey = ((MessageRequest) obj).getRomeKey();
+                roomKey = ((MessageRequest) obj).getRoomKey();
             }
         }
 
-        if(romeKey == null) {
-            throw new RuntimeException("romeKey is null");
+        if(roomKey == null) {
+            throw new UserHandlerException(Code.NO_ROOM_KEY);
         }
 
         if(command.function().equals("#wakeup!")) {
-            redisHelper.delete(String.valueOf(romeKey));
+            redisHelper.delete(String.valueOf(roomKey));
         }
 
+        //redis push (실행한 function . no parma)
         ConversationInfo conversationInfo = ConversationUtils.paramToObject(command.function());
-        redisHelper.push(String.valueOf(romeKey), ConversationUtils.objectToString(conversationInfo));
+        redisHelper.push(String.valueOf(roomKey), ConversationUtils.objectToString(conversationInfo));
 
         Object object = joinPoint.proceed();
-
-        log.info("redisCheck end");
         return object;
     }
 
