@@ -1,6 +1,7 @@
 package com.joonghyun.bot.conference.model;
 
 import com.joonghyun.model.Conference;
+import com.joonghyun.model.ConferenceReserve;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,7 +15,7 @@ public class ConferenceVO {
 
     private String date;
 
-    private Conference.TimeZone timeZone;
+    private ConferenceReserve.TimeZone timeZone;
 
     private String content;
 
@@ -48,11 +49,11 @@ public class ConferenceVO {
         this.date = date;
     }
 
-    public Conference.TimeZone getTimeZone() {
+    public ConferenceReserve.TimeZone getTimeZone() {
         return timeZone;
     }
 
-    public void setTimeZone(Conference.TimeZone timeZone) {
+    public void setTimeZone(ConferenceReserve.TimeZone timeZone) {
         this.timeZone = timeZone;
     }
 

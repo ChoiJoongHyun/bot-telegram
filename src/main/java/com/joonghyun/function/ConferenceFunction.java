@@ -34,6 +34,11 @@ public class ConferenceFunction {
         public static final String CONFERENCE_CANCEL_SUCC = "취소 완료하였습니다";
     }
 
+    public class Param {
+        String zone;
+        String date;
+    }
+
     @Command(msg="회의실", function = "conference", parent = "wakeup")
     public String conference(MessageRequest messageRequest) {
         log.debug("conference start messageRequest : {}", messageRequest.toString());
@@ -45,7 +50,9 @@ public class ConferenceFunction {
     @Command(function = "conferenceList", parent = "conference")
     public String conferenceList(MessageRequest messageRequest) {
         log.debug("conferenceList start messageRequest : {}", messageRequest.toString());
+        //TODO messageRequest msg 필수값 체크 ex) C601, 20170505
 
+        conferenceService.allList(null);
 
         //전체리스트 +
         return Message.CONFERENCE_LIST;

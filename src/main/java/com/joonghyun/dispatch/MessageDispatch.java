@@ -145,11 +145,8 @@ public class MessageDispatch {
             return null;
         } catch (UserHandlerException ue) {
             log.error("UserHandlerException code : {}, msg : {}",ue.getCode().getCode(), ue.getCode().getMessage());
+            redisHelper.pop(String.valueOf(roomKey));
             return ue.getCode().getMessage();
         }
-
     }
-
-
-
 }
