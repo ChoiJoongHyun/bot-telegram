@@ -140,13 +140,15 @@ public class MessageDispatch {
                 return null;
             }
             return commander.execute(messageRequest);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            log.error("InvocationTargetException or IllegalAccessException : {}", e);
-            return null;
-        } catch (UserHandlerException ue) {
-            log.error("UserHandlerException code : {}, msg : {}",ue.getCode().getCode(), ue.getCode().getMessage());
+        }  catch (UserHandlerException ue) {
+            System.out.println("joonghyun");
+            log.info("UserHandlerException code : {}, msg : {}",ue.getCode().getCode(), ue.getCode().getMessage());
             redisHelper.pop(String.valueOf(roomKey));
             return ue.getCode().getMessage();
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            System.out.println("InvocationTargetException or IllegalAccessException");
+            log.info("InvocationTargetException or IllegalAccessException : {}", e);
+            return null;
         }
     }
 }

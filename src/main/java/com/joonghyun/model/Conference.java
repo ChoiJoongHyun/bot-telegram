@@ -35,4 +35,15 @@ public class Conference {
         }
     }
 
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public Zone getZone() {
+        return zone;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

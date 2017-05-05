@@ -61,9 +61,22 @@ public class ConferenceReserve {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ConferenceReserve{" +
+                "idx=" + idx +
+                ", conference=" + conference +
+                ", date='" + date + '\'' +
+                ", timeZone=" + timeZone +
+                ", content='" + content + '\'' +
+                ", reserveName='" + reserveName + '\'' +
+                ", cancelReason='" + cancelReason + '\'' +
+                ", cancelName='" + cancelName + '\'' +
+                ", delete=" + delete +
+                '}';
+    }
 
-
-//    @EmbeddedId
+    //    @EmbeddedId
 //    private ConferenceReserve.PK pk;
 //    @Embeddable
 //    public class PK implements Serializable {

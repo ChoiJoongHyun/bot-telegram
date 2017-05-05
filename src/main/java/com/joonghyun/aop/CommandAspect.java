@@ -1,8 +1,7 @@
 package com.joonghyun.aop;
 
 import com.joonghyun.anotation.Command;
-import com.joonghyun.dispatch.MessageDispatch;
-import com.joonghyun.error.Code;
+import com.joonghyun.error.GeneralCode;
 import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.helper.RedisHelper;
 import com.joonghyun.model.converstation.ConversationInfo;
@@ -34,7 +33,7 @@ public class CommandAspect {
         Command command = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(Command.class);
 
         if(command == null) {
-            throw new UserHandlerException(Code.NO_EXIST_COMMAND);
+            throw new UserHandlerException(GeneralCode.NO_EXIST_COMMAND);
         }
 
         String roomKey = null;
@@ -45,7 +44,7 @@ public class CommandAspect {
         }
 
         if(roomKey == null) {
-            throw new UserHandlerException(Code.NO_ROOM_KEY);
+            throw new UserHandlerException(GeneralCode.NO_ROOM_KEY);
         }
 
         if(command.function().equals("#wakeup!")) {
@@ -56,8 +55,10 @@ public class CommandAspect {
         ConversationInfo conversationInfo = ConversationUtils.paramToObject(command.function());
         redisHelper.push(String.valueOf(roomKey), ConversationUtils.objectToString(conversationInfo));
 
-        Object object = joinPoint.proceed();
-        return object;
+        try {
+            return joinPoint.proceed();
+        } catch (UserHandlerException ue) {
+            return ue.getCode() + " : " + ue.getMessage();
+        }
     }
-
 }
