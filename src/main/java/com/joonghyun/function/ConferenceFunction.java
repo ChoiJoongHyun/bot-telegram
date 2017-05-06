@@ -54,8 +54,13 @@ public class ConferenceFunction {
     public String conferenceList(MessageRequest messageRequest) {
         log.debug("conferenceList start messageRequest : {}", messageRequest.toString());
         //TODO messageRequest msg 필수값 체크 ex) C601, 20170505
+        conferenceService.allList("C602", "20170505");
 
-        conferenceService.allList(null, null);
+        String msg = messageRequest.getMsg().replaceAll(" ", "");
+
+        
+
+        conferenceService.allList(msg.split(",")[0], msg.split(",")[1]);
 
 
         //전체리스트 +

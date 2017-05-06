@@ -61,6 +61,10 @@ public class ConferenceReserve {
         }
     }
 
+    public String toShortString() {
+        return "[" + timeZone.name() + "] " + timeZone.getDescript() + " : " +  reserveName + "(" + content + ")";
+    }
+
     @Override
     public String toString() {
         return "ConferenceReserve{" +

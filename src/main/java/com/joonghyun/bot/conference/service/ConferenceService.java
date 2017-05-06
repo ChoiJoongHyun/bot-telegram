@@ -10,6 +10,8 @@ import com.joonghyun.model.Conference;
 import com.joonghyun.model.ConferenceReserve;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.tomcat.jni.Directory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ import java.util.List;
  */
 @Service
 public class ConferenceService {
+
+    private static final Logger log = LoggerFactory.getLogger(ConferenceService.class);
 
     @Autowired
     private ConferenceReserveRepository conferenceReserveRepository;
@@ -70,8 +74,12 @@ public class ConferenceService {
     public List<ConferenceReserve> allList(String zone, String date) {
         List<ConferenceReserve> resultList = conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(date, getConference(zone));
 
+        for(ConferenceReserve cr : resultList) {
+            log.debug(cr.toString());
+        }
+
         for(ConferenceReserve.TimeZone d : ConferenceReserve.TimeZone.values()) {
-            System.out.println();
+            System.out.println(d.getDescript() + " : " + d.name());
         }
 
         return resultList;
