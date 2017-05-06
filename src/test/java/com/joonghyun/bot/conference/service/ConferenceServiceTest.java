@@ -1,5 +1,6 @@
 package com.joonghyun.bot.conference.service;
 
+import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.model.ConferenceReserve;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,12 +23,15 @@ public class ConferenceServiceTest {
     @Autowired
     private ConferenceService conferenceService;
 
-
+    @Test(expected = UserHandlerException.class)
+    public void allList_존재하지않는_회의실() throws Exception {
+        conferenceService.allList("T1042", "20170505").size();
+    }
 
     @Test
     public void allList() throws Exception {
-        int size = conferenceService.allList("C601", "20170505").size();
-        Assert.assertEquals(1, size);
+        int size = conferenceService.allList("C602", "20170505").size();
+        Assert.assertEquals(3, size);
     }
 
     @Test

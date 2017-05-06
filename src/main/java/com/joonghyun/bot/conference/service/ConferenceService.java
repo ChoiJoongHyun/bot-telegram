@@ -8,6 +8,8 @@ import com.joonghyun.error.GeneralCode;
 import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.model.Conference;
 import com.joonghyun.model.ConferenceReserve;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.apache.tomcat.jni.Directory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,16 +52,27 @@ public class ConferenceService {
         }
     }
 
+    private Conference getConference(String zone) {
+        try {
+            Conference conference = conferenceRepository.findByZone(Conference.Zone.valueOf(zone));
+            if(conference == null) {
+                throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE);
+            }
+            return conference;
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE);
+        }
+    }
+
     /**
      * 해당 날짜의 특정 회의실 전체 목록
      * */
     public List<ConferenceReserve> allList(String zone, String date) {
-        Conference conference = conferenceRepository.findByZone(Conference.Zone.valueOf(zone));
-        if(conference == null) {
-            throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE);
-        }
+        List<ConferenceReserve> resultList = conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(date, getConference(zone));
 
-        List<ConferenceReserve> resultList = conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(date, conference);
+        for(ConferenceReserve.TimeZone d : ConferenceReserve.TimeZone.values()) {
+            System.out.println();
+        }
 
         return resultList;
     }
@@ -67,16 +80,16 @@ public class ConferenceService {
     /**
      * 회의실 취소
      * */
-    public String cancel(ConferenceVO conferenceVO) {
+    public Boolean cancel(ConferenceVO conferenceVO) {
 
-        return "cancel";
+        return true;
     }
 
     /**
      * 회의실 예약
      * */
-    public String reserve (ConferenceVO conferenceVO) {
-        return "reserve";
+    public Boolean reserve (ConferenceVO conferenceVO) {
+        return true;
     }
 
 
