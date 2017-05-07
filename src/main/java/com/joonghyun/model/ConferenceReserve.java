@@ -61,6 +61,10 @@ public class ConferenceReserve {
         }
     }
 
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
     public String toShortString() {
         return "[" + timeZone.name() + "] " + timeZone.getDescript() + " : " +  reserveName + "(" + content + ")";
     }

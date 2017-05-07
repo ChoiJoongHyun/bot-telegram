@@ -3,10 +3,13 @@ package com.joonghyun.function;
 import com.joonghyun.anotation.Command;
 import com.joonghyun.anotation.Function;
 import com.joonghyun.bot.conference.service.ConferenceService;
+import com.joonghyun.model.ConferenceReserve;
 import com.joonghyun.model.request.MessageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * Created by joonghyun on 2017. 5. 3..
@@ -54,17 +57,24 @@ public class ConferenceFunction {
     public String conferenceList(MessageRequest messageRequest) {
         log.debug("conferenceList start messageRequest : {}", messageRequest.toString());
         //TODO messageRequest msg 필수값 체크 ex) C601, 20170505
-        conferenceService.allList("C602", "20170505");
-
         String msg = messageRequest.getMsg().replaceAll(" ", "");
 
-        
+        List<ConferenceReserve> conferenceReserveList = conferenceService.allList(msg.split(",")[0], msg.split(",")[1]);
 
-        conferenceService.allList(msg.split(",")[0], msg.split(",")[1]);
+        final StringBuilder sb = new StringBuilder();
+        for(ConferenceReserve.TimeZone d : ConferenceReserve.TimeZone.values()) {
+            for(ConferenceReserve conferenceReserve : conferenceReserveList) {
+                if(d.name().equals(conferenceReserve.getTimeZone().name())) {
+                    sb.append(conferenceReserve.toShortString()).append("\n");
+                    break;
+                } else {
+                    sb.append("[").append(d.name()).append("] ").append(d.getDescript()).append(":").append("\n");
+                    break;
+                }
+            }
+        }
 
-
-        //전체리스트 +
-        return Message.CONFERENCE_LIST;
+        return sb.toString() + Message.CONFERENCE_LIST;
     }
 
     @Command(msg = "예약", function = "conferenceReserveList", parent = "conferenceList")

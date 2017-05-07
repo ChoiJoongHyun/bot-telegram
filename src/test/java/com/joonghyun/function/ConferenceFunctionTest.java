@@ -35,7 +35,8 @@ public class ConferenceFunctionTest {
     public void conferenceList() throws Exception {
         String request = "C602, 20170505";
         MessageRequest messageRequest = new MessageRequest(ROOM_KEY, request);
-        conferenceFunction.conferenceList(messageRequest);
+        String response = conferenceFunction.conferenceList(messageRequest);
+        log.info("response : {}", response);
     }
 
     @Test

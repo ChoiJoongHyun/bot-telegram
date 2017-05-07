@@ -4,12 +4,9 @@ import com.joonghyun.bot.conference.model.ConferenceVO;
 import com.joonghyun.bot.conference.repository.ConferenceRepository;
 import com.joonghyun.bot.conference.repository.ConferenceReserveRepository;
 import com.joonghyun.error.Code;
-import com.joonghyun.error.GeneralCode;
 import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.model.Conference;
 import com.joonghyun.model.ConferenceReserve;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.apache.tomcat.jni.Directory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,6 @@ import java.util.List;
 
 /**
  * Created by joonghyun on 2017. 5. 3..
- * generatedAlias0 where generatedAlias0.date=:param0
  */
 @Service
 public class ConferenceService {
@@ -56,15 +52,18 @@ public class ConferenceService {
         }
     }
 
+    /**
+     * 회의실 확인
+     * */
     private Conference getConference(String zone) {
         try {
             Conference conference = conferenceRepository.findByZone(Conference.Zone.valueOf(zone));
             if(conference == null) {
-                throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE);
+                throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE, zone);
             }
             return conference;
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE);
+            throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE, zone);
         }
     }
 
@@ -72,17 +71,8 @@ public class ConferenceService {
      * 해당 날짜의 특정 회의실 전체 목록
      * */
     public List<ConferenceReserve> allList(String zone, String date) {
-        List<ConferenceReserve> resultList = conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(date, getConference(zone));
-
-        for(ConferenceReserve cr : resultList) {
-            log.debug(cr.toString());
-        }
-
-        for(ConferenceReserve.TimeZone d : ConferenceReserve.TimeZone.values()) {
-            System.out.println(d.getDescript() + " : " + d.name());
-        }
-
-        return resultList;
+        List<ConferenceReserve> conferenceReserveList = conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(date, getConference(zone));
+        return conferenceReserveList;
     }
 
     /**

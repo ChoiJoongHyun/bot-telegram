@@ -134,21 +134,22 @@ public class MessageDispatch {
                 return commanderMap.get(conversation.getFunctionMap().get("")).execute(messageRequest);
             }
 
-            //예약어를 입력해야 할 경우
+            //예약어를 입력해야 할 경우 (예약어 아닌 다른 단어 입력시 null 처리하여 사용자에게 메시지 보내지 않음)
             Commander commander = commanderMap.get(conversation.getFunctionMap().get(msg));
             if(commander == null) {
                 return null;
             }
             return commander.execute(messageRequest);
-        }  catch (UserHandlerException ue) {
-            System.out.println("joonghyun");
-            log.info("UserHandlerException code : {}, msg : {}",ue.getCode().getCode(), ue.getCode().getMessage());
+        } catch (UserHandlerException ue) {
+            System.out.println("UserHandlerException");
+            log.error("UserHandlerException code : {}, msg : {}",ue.getCode().getCode(), ue.getCode().getMessage());
             redisHelper.pop(String.valueOf(roomKey));
             return ue.getCode().getMessage();
         } catch (InvocationTargetException | IllegalAccessException e) {
             System.out.println("InvocationTargetException or IllegalAccessException");
-            log.info("InvocationTargetException or IllegalAccessException : {}", e);
-            return null;
+            log.error("InvocationTargetException or IllegalAccessException : {}", e);
+            redisHelper.pop(String.valueOf(roomKey));
+            return e.getMessage();
         }
     }
 }

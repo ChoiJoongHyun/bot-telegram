@@ -58,7 +58,8 @@ public class CommandAspect {
         try {
             return joinPoint.proceed();
         } catch (UserHandlerException ue) {
-            return ue.getCode() + " : " + ue.getMessage();
+            //TODO redis pop or delete
+            return ue.getCode() + " : " + ue.getMessage() + "(" + ue.getAddMsg() + ")";
         }
     }
 }
