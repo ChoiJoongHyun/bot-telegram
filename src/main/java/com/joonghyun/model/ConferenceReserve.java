@@ -36,7 +36,7 @@ public class ConferenceReserve {
     @Column(name="cancel_name")
     private String cancelName;
 
-    @Column(name="delete", nullable = false, columnDefinition = "boolean default false")
+    @Column(name="delete", columnDefinition = "boolean default false")
     private Boolean delete;
 
     public enum TimeZone {
@@ -59,6 +59,10 @@ public class ConferenceReserve {
         public String getDescript() {
             return descript;
         }
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
     }
 
     public TimeZone getTimeZone() {
@@ -131,4 +135,68 @@ public class ConferenceReserve {
 //        }
 //    }
 
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Conference getConference() {
+        return conference;
+    }
+
+    public void setConference(Conference conference) {
+        this.conference = conference;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getReserveName() {
+        return reserveName;
+    }
+
+    public void setReserveName(String reserveName) {
+        this.reserveName = reserveName;
+    }
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
+    public void setCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
+    public String getCancelName() {
+        return cancelName;
+    }
+
+    public void setCancelName(String cancelName) {
+        this.cancelName = cancelName;
+    }
+
+    public Boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(Boolean delete) {
+        this.delete = delete;
+    }
 }

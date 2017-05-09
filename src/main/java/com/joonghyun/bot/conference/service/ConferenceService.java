@@ -80,8 +80,8 @@ public class ConferenceService {
     /**
      * 회의실
      * */
-    private ConferenceReserve conferenceReserve(String date, String zone, String timeZone) {
-        return conferenceReserveRepository.findAllByDateAndConferenceAndTimeZone(date, getConference(zone), getTimeZone(timeZone));
+    private ConferenceReserve conferenceReserve(String date, Conference conference, ConferenceReserve.TimeZone timeZone) {
+        return conferenceReserveRepository.findAllByDateAndConferenceAndTimeZone(date, conference, timeZone);
     }
 
 
@@ -106,17 +106,23 @@ public class ConferenceService {
     /**
      * 회의실 예약
      * */
-    public Boolean reserve (String date, String zone, String timeZone, String reserveName, String content ) {
+    public ConferenceReserve reserve (String date, String zone, String timeZone, String reserveName, String content ) {
 
-        ConferenceReserve conferenceReserve = conferenceReserve(date, zone, timeZone);
+        Conference conference = getConference(zone);
+        ConferenceReserve.TimeZone cTimeZone = getTimeZone(timeZone);
+
+        ConferenceReserve conferenceReserve = conferenceReserve(date, conference, cTimeZone);
         if(conferenceReserve != null) {
             throw new UserHandlerException(ErrorCode.AlREADY_RESERVE);
         }
 
-        //TODO save
+        conferenceReserve = new ConferenceReserve();
+        conferenceReserve.setDate(date);
+        conferenceReserve.setConference(conference);
+        conferenceReserve.setTimeZone(cTimeZone);
+        conferenceReserve.setReserveName(reserveName);
+        conferenceReserve.setContent(content);
 
-        return true;
+        return conferenceReserveRepository.save(conferenceReserve);
     }
-
-
 }

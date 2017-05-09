@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class ConferenceServiceTest {
 
     @Autowired
@@ -40,7 +42,7 @@ public class ConferenceServiceTest {
 
     @Test
     public void reserve() throws Exception {
-        conferenceService.reserve("20170505", "C602", "T101", "최중현", "연구소회의");
+        conferenceService.reserve("20170505", "C602", "T13", "최중현", "연구소회의");
     }
 
 }
