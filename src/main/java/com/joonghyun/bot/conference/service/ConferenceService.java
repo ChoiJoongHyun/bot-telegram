@@ -1,6 +1,6 @@
 package com.joonghyun.bot.conference.service;
 
-import com.joonghyun.bot.conference.model.ConferenceVO;
+import com.joonghyun.bot.conference.model.ConferenceReserveDto;
 import com.joonghyun.bot.conference.repository.ConferenceRepository;
 import com.joonghyun.bot.conference.repository.ConferenceReserveRepository;
 import com.joonghyun.error.Code;
@@ -98,7 +98,7 @@ public class ConferenceService {
     /**
      * 회의실 취소
      * */
-    public Boolean cancel(ConferenceVO conferenceVO) {
+    public Boolean cancel(ConferenceReserveDto conferenceReserveDto) {
 
         return true;
     }

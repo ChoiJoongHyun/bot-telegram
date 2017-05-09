@@ -9,13 +9,13 @@ import java.util.Date;
 /**
  * Created by joonghyun on 2017. 5. 3..
  */
-public class ConferenceVO {
+public class ConferenceReserveDto {
 
-    private Conference.Zone zone;
+    private String zone;
 
     private String date;
 
-    private ConferenceReserve.TimeZone timeZone;
+    private String timeZone;
 
     private String content;
 
@@ -25,19 +25,19 @@ public class ConferenceVO {
 
     private String reserveName;
 
-    private Boolean delete;
+    private boolean delete;
 
-    public ConferenceVO (){
+    public ConferenceReserveDto(){
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         Date currentTime_1 = new Date(System.currentTimeMillis());
         this.date = formatter.format(currentTime_1);
     }
 
-    public Conference.Zone getZone() {
+    public String getZone() {
         return zone;
     }
 
-    public void setZone(Conference.Zone zone) {
+    public void setZone(String zone) {
         this.zone = zone;
     }
 
@@ -49,11 +49,11 @@ public class ConferenceVO {
         this.date = date;
     }
 
-    public ConferenceReserve.TimeZone getTimeZone() {
+    public String getTimeZone() {
         return timeZone;
     }
 
-    public void setTimeZone(ConferenceReserve.TimeZone timeZone) {
+    public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
     }
 
@@ -89,11 +89,11 @@ public class ConferenceVO {
         this.reserveName = reserveName;
     }
 
-    public Boolean getDelete() {
+    public boolean isDelete() {
         return delete;
     }
 
-    public void setDelete(Boolean delete) {
+    public void setDelete(boolean delete) {
         this.delete = delete;
     }
 }
