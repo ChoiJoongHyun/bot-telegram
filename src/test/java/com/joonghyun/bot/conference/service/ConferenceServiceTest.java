@@ -40,6 +40,7 @@ public class ConferenceServiceTest {
 
     @Test
     public void reserve() throws Exception {
+        conferenceService.reserve("20170505", "C602", "T101", "최중현", "연구소회의");
     }
 
 }

@@ -31,6 +31,8 @@ public class ConferenceService {
     private enum ErrorCode implements Code {
 
         NO_CONFERENCE_ZONE("3001", "회의실이 존재하지 않습니다.")
+        ,AlREADY_RESERVE("3002", "이미 예약이 되어 있습니다.")
+        ,NO_EXIST_TIMEZONE("3003", "존재하지 않는 시간 입니다.")
         ;
 
         private String code;
@@ -51,7 +53,16 @@ public class ConferenceService {
             this.message = message;
         }
     }
-
+    /**
+     * 타임존
+     * */
+    private ConferenceReserve.TimeZone getTimeZone(String timeZone) {
+        try {
+            return ConferenceReserve.TimeZone.valueOf(timeZone);
+        } catch (IllegalArgumentException e) {
+            throw new UserHandlerException(ErrorCode.NO_EXIST_TIMEZONE);
+        }
+    }
     /**
      * 회의실 확인
      * */
@@ -66,6 +77,15 @@ public class ConferenceService {
             throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE, zone);
         }
     }
+    /**
+     * 회의실
+     * */
+    private ConferenceReserve conferenceReserve(String date, String zone, String timeZone) {
+        return conferenceReserveRepository.findAllByDateAndConferenceAndTimeZone(date, getConference(zone), getTimeZone(timeZone));
+    }
+
+
+
 
     /**
      * 해당 날짜의 특정 회의실 전체 목록
@@ -86,7 +106,15 @@ public class ConferenceService {
     /**
      * 회의실 예약
      * */
-    public Boolean reserve (ConferenceVO conferenceVO) {
+    public Boolean reserve (String date, String zone, String timeZone, String reserveName, String content ) {
+
+        ConferenceReserve conferenceReserve = conferenceReserve(date, zone, timeZone);
+        if(conferenceReserve != null) {
+            throw new UserHandlerException(ErrorCode.AlREADY_RESERVE);
+        }
+
+        //TODO save
+
         return true;
     }
 

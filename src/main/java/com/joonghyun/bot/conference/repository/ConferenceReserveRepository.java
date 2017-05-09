@@ -15,4 +15,6 @@ public interface ConferenceReserveRepository extends JpaRepository<ConferenceRes
     List<ConferenceReserve> findAllByDateAndConferenceOrderByTimeZone(String date, Conference conference);
     List<ConferenceReserve> findAllByTimeZone(ConferenceReserve.TimeZone timeZone);
 
+    ConferenceReserve findAllByDateAndConferenceAndTimeZone(String date, Conference conference, ConferenceReserve.TimeZone timeZone);
+
 }
