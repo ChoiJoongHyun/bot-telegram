@@ -1,5 +1,6 @@
 package com.joonghyun.bot.conference.service;
 
+import com.joonghyun.bot.conference.model.ConferenceReserveDto;
 import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.model.ConferenceReserve;
 import org.junit.Assert;
@@ -27,12 +28,18 @@ public class ConferenceServiceTest {
 
     @Test(expected = UserHandlerException.class)
     public void allList_존재하지않는_회의실() throws Exception {
-        conferenceService.allList("T1042", "20170505").size();
+        ConferenceReserveDto conferenceReserveDto = new ConferenceReserveDto();
+        conferenceReserveDto.setZone("T1042");
+        conferenceReserveDto.setDate("20170505");
+        conferenceService.allList(conferenceReserveDto).size();
     }
 
     @Test
     public void allList() throws Exception {
-        int size = conferenceService.allList("C602", "20170505").size();
+        ConferenceReserveDto conferenceReserveDto = new ConferenceReserveDto();
+        conferenceReserveDto.setZone("C602");
+        conferenceReserveDto.setDate("20170505");
+        int size = conferenceService.allList(conferenceReserveDto).size();
         Assert.assertEquals(3, size);
     }
 
@@ -42,7 +49,13 @@ public class ConferenceServiceTest {
 
     @Test
     public void reserve() throws Exception {
-        conferenceService.reserve("20170505", "C602", "T13", "최중현", "연구소회의");
+        ConferenceReserveDto conferenceReserveDto = new ConferenceReserveDto();
+        conferenceReserveDto.setZone("C602");
+        conferenceReserveDto.setDate("20170505");
+        conferenceReserveDto.setTimeZone("T13");
+        conferenceReserveDto.setReserveName("최중현");
+        conferenceReserveDto.setContent("연구소회의");
+        conferenceService.reserve(conferenceReserveDto);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.joonghyun.bot.conference.model;
 
+import com.joonghyun.bot.conference.service.ConferenceService;
+import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.model.Conference;
 import com.joonghyun.model.ConferenceReserve;
 
@@ -33,8 +35,12 @@ public class ConferenceReserveDto {
         this.date = formatter.format(currentTime_1);
     }
 
-    public String getZone() {
-        return zone;
+    public Conference.Zone getZone() {
+        try {
+            return Conference.Zone.valueOf(zone);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new UserHandlerException(ConferenceService.ErrorCode.NO_EXIST_CONFERENCE);
+        }
     }
 
     public void setZone(String zone) {
@@ -49,8 +55,12 @@ public class ConferenceReserveDto {
         this.date = date;
     }
 
-    public String getTimeZone() {
-        return timeZone;
+    public ConferenceReserve.TimeZone getTimeZone() {
+        try {
+            return ConferenceReserve.TimeZone.valueOf(timeZone);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new UserHandlerException(ConferenceService.ErrorCode.NO_EXIST_TIMEZONE);
+        }
     }
 
     public void setTimeZone(String timeZone) {

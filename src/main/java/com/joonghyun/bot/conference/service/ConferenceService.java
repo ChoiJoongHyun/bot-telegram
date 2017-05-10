@@ -28,9 +28,9 @@ public class ConferenceService {
     @Autowired
     private ConferenceRepository conferenceRepository;
 
-    private enum ErrorCode implements Code {
+    public enum ErrorCode implements Code {
 
-        NO_CONFERENCE_ZONE("3001", "회의실이 존재하지 않습니다.")
+        NO_EXIST_CONFERENCE("3001", "회의실이 존재하지 않습니다.")
         ,AlREADY_RESERVE("3002", "이미 예약이 되어 있습니다.")
         ,NO_EXIST_TIMEZONE("3003", "존재하지 않는 시간 입니다.")
         ;
@@ -53,29 +53,16 @@ public class ConferenceService {
             this.message = message;
         }
     }
-    /**
-     * 타임존
-     * */
-    private ConferenceReserve.TimeZone getTimeZone(String timeZone) {
-        try {
-            return ConferenceReserve.TimeZone.valueOf(timeZone);
-        } catch (IllegalArgumentException e) {
-            throw new UserHandlerException(ErrorCode.NO_EXIST_TIMEZONE);
-        }
-    }
+
     /**
      * 회의실 확인
      * */
-    private Conference getConference(String zone) {
-        try {
-            Conference conference = conferenceRepository.findByZone(Conference.Zone.valueOf(zone));
-            if(conference == null) {
-                throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE, zone);
-            }
-            return conference;
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new UserHandlerException(ErrorCode.NO_CONFERENCE_ZONE, zone);
+    private Conference getConference(Conference.Zone zone) {
+        Conference conference = conferenceRepository.findByZone(zone);
+        if(conference == null) {
+            throw new UserHandlerException(ErrorCode.NO_EXIST_CONFERENCE, zone.name());
         }
+        return conference;
     }
     /**
      * 회의실
@@ -89,9 +76,11 @@ public class ConferenceService {
 
     /**
      * 해당 날짜의 특정 회의실 전체 목록
+     * String zone, String date
      * */
-    public List<ConferenceReserve> allList(String zone, String date) {
-        List<ConferenceReserve> conferenceReserveList = conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(date, getConference(zone));
+    public List<ConferenceReserve> allList(ConferenceReserveDto conferenceReserveDto) {
+        List<ConferenceReserve> conferenceReserveList =
+                conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(conferenceReserveDto.getDate(), getConference(conferenceReserveDto.getZone()));
         return conferenceReserveList;
     }
 
@@ -105,23 +94,23 @@ public class ConferenceService {
 
     /**
      * 회의실 예약
+     * String date, String zone, String timeZone, String reserveName, String content
      * */
-    public ConferenceReserve reserve (String date, String zone, String timeZone, String reserveName, String content ) {
+    public ConferenceReserve reserve (ConferenceReserveDto conferenceReserveDto) {
 
-        Conference conference = getConference(zone);
-        ConferenceReserve.TimeZone cTimeZone = getTimeZone(timeZone);
+        Conference conference = getConference(conferenceReserveDto.getZone());
 
-        ConferenceReserve conferenceReserve = conferenceReserve(date, conference, cTimeZone);
+        ConferenceReserve conferenceReserve = conferenceReserve(conferenceReserveDto.getDate(), conference, conferenceReserveDto.getTimeZone());
         if(conferenceReserve != null) {
             throw new UserHandlerException(ErrorCode.AlREADY_RESERVE);
         }
 
         conferenceReserve = new ConferenceReserve();
-        conferenceReserve.setDate(date);
+        conferenceReserve.setDate(conferenceReserveDto.getDate());
         conferenceReserve.setConference(conference);
-        conferenceReserve.setTimeZone(cTimeZone);
-        conferenceReserve.setReserveName(reserveName);
-        conferenceReserve.setContent(content);
+        conferenceReserve.setTimeZone(conferenceReserveDto.getTimeZone());
+        conferenceReserve.setReserveName(conferenceReserveDto.getReserveName());
+        conferenceReserve.setContent(conferenceReserveDto.getContent());
 
         return conferenceReserveRepository.save(conferenceReserve);
     }

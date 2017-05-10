@@ -2,6 +2,7 @@ package com.joonghyun.function;
 
 import com.joonghyun.anotation.Command;
 import com.joonghyun.anotation.Function;
+import com.joonghyun.bot.conference.model.ConferenceReserveDto;
 import com.joonghyun.bot.conference.service.ConferenceService;
 import com.joonghyun.model.ConferenceReserve;
 import com.joonghyun.model.request.MessageRequest;
@@ -59,7 +60,11 @@ public class ConferenceFunction {
         //TODO messageRequest msg 필수값 체크 ex) C601, 20170505
         String msg = messageRequest.getMsg().replaceAll(" ", "");
 
-        List<ConferenceReserve> conferenceReserveList = conferenceService.allList(msg.split(",")[0], msg.split(",")[1]);
+        ConferenceReserveDto conferenceReserveDto = new ConferenceReserveDto();
+        conferenceReserveDto.setDate(msg.split(",")[1]);
+        conferenceReserveDto.setDate(msg.split(",")[0]);
+
+        List<ConferenceReserve> conferenceReserveList = conferenceService.allList(conferenceReserveDto);
 
         final StringBuilder sb = new StringBuilder();
         for(ConferenceReserve.TimeZone d : ConferenceReserve.TimeZone.values()) {
