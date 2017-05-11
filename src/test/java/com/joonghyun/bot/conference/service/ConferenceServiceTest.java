@@ -45,6 +45,13 @@ public class ConferenceServiceTest {
 
     @Test
     public void cancel() throws Exception {
+        ConferenceReserveDto conferenceReserveDto = new ConferenceReserveDto();
+        conferenceReserveDto.setZone("C602");
+        conferenceReserveDto.setDate("20170505");
+        conferenceReserveDto.setTimeZone("T10");
+        conferenceReserveDto.setCancelName("최중현");
+        conferenceReserveDto.setCancelReason("취소");
+        conferenceService.cancel(conferenceReserveDto);
     }
 
     @Test

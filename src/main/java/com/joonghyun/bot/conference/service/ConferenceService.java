@@ -33,6 +33,7 @@ public class ConferenceService {
         NO_EXIST_CONFERENCE("3001", "회의실이 존재하지 않습니다.")
         ,AlREADY_RESERVE("3002", "이미 예약이 되어 있습니다.")
         ,NO_EXIST_TIMEZONE("3003", "존재하지 않는 시간 입니다.")
+        ,EMPTY_CONFERENCE("3004", "회의실이 비어 있습니다.")
         ;
 
         private String code;
@@ -87,9 +88,20 @@ public class ConferenceService {
     /**
      * 회의실 취소
      * */
-    public Boolean cancel(ConferenceReserveDto conferenceReserveDto) {
+    public ConferenceReserve cancel(ConferenceReserveDto conferenceReserveDto) {
 
-        return true;
+        Conference conference = getConference(conferenceReserveDto.getZone());
+
+        ConferenceReserve conferenceReserve = conferenceReserve(conferenceReserveDto.getDate(), conference, conferenceReserveDto.getTimeZone());
+        if(conferenceReserve == null) {
+            throw new UserHandlerException(ErrorCode.EMPTY_CONFERENCE);
+        }
+;
+        conferenceReserve.setCancelName(conferenceReserveDto.getCancelName());
+        conferenceReserve.setCancelReason(conferenceReserveDto.getCancelReason());
+        conferenceReserve.setDelete(true);
+
+        return conferenceReserveRepository.save(conferenceReserve);
     }
 
     /**
