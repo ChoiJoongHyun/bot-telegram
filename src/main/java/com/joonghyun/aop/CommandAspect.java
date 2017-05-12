@@ -59,6 +59,7 @@ public class CommandAspect {
             return joinPoint.proceed();
         } catch (UserHandlerException ue) {
             //TODO redis pop or delete
+            redisHelper.pop(String.valueOf(roomKey));
             return ue.getCode() + " : " + ue.getMessage() + "(" + ue.getAddMsg() + ")";
         }
     }
