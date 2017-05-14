@@ -37,7 +37,7 @@ public class ConferenceReserveDto {
 
     public Conference.Zone getZone() {
         try {
-            return Conference.Zone.valueOf(zone);
+            return Conference.Zone.valueOf(zone.toUpperCase().trim());
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new UserHandlerException(ConferenceService.ErrorCode.NO_EXIST_CONFERENCE);
         }
@@ -57,7 +57,7 @@ public class ConferenceReserveDto {
 
     public ConferenceReserve.TimeZone getTimeZone() {
         try {
-            return ConferenceReserve.TimeZone.valueOf(timeZone);
+            return ConferenceReserve.TimeZone.valueOf(timeZone.toUpperCase().trim());
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new UserHandlerException(ConferenceService.ErrorCode.NO_EXIST_TIMEZONE);
         }

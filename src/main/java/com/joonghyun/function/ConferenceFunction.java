@@ -4,6 +4,8 @@ import com.joonghyun.anotation.Command;
 import com.joonghyun.anotation.Function;
 import com.joonghyun.bot.conference.model.ConferenceReserveDto;
 import com.joonghyun.bot.conference.service.ConferenceService;
+import com.joonghyun.error.GeneralCode;
+import com.joonghyun.error.UserHandlerException;
 import com.joonghyun.model.ConferenceReserve;
 import com.joonghyun.model.request.MessageRequest;
 import org.slf4j.Logger;
@@ -58,11 +60,17 @@ public class ConferenceFunction {
     public String conferenceList(MessageRequest messageRequest) {
         log.debug("conferenceList start messageRequest : {}", messageRequest.toString());
         //TODO messageRequest msg 필수값 체크 ex) C601, 20170505
-        String msg = messageRequest.getMsg().replaceAll(" ", "");
+
+        String msgs[] = messageRequest.getMsg().split(",");
+        if(msgs.length > 2) {
+            throw new UserHandlerException(GeneralCode.NO_EXIST_COMMAND);
+        }
 
         ConferenceReserveDto conferenceReserveDto = new ConferenceReserveDto();
-        conferenceReserveDto.setDate(msg.split(",")[1]);
-        conferenceReserveDto.setDate(msg.split(",")[0]);
+        conferenceReserveDto.setZone(msgs[0]);
+        if(msgs[1] != null) {
+            conferenceReserveDto.setDate(msgs[1]);
+        }
 
         List<ConferenceReserve> conferenceReserveList = conferenceService.allList(conferenceReserveDto);
 
