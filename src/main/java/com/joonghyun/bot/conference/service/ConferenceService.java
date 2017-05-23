@@ -82,6 +82,7 @@ public class ConferenceService {
     public List<ConferenceReserve> allList(ConferenceReserveDto conferenceReserveDto) {
         List<ConferenceReserve> conferenceReserveList =
                 conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(conferenceReserveDto.getDate(), getConference(conferenceReserveDto.getZone()));
+        System.out.println(conferenceReserveList.size());
         return conferenceReserveList;
     }
 

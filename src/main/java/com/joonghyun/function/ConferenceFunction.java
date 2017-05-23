@@ -60,15 +60,16 @@ public class ConferenceFunction {
     public String conferenceList(MessageRequest messageRequest) {
         log.debug("conferenceList start messageRequest : {}", messageRequest.toString());
         //TODO messageRequest msg 필수값 체크 ex) C601, 20170505
-
-        String msgs[] = messageRequest.getMsg().split(",");
+        String msgs[] = messageRequest.getMsg()
+                .replaceAll(" ","")
+                .split(",");
         if(msgs.length > 2) {
             throw new UserHandlerException(GeneralCode.NO_EXIST_COMMAND);
         }
 
         ConferenceReserveDto conferenceReserveDto = new ConferenceReserveDto();
         conferenceReserveDto.setZone(msgs[0]);
-        if(msgs[1] != null) {
+        if(msgs.length == 2) {
             conferenceReserveDto.setDate(msgs[1]);
         }
 
@@ -93,9 +94,6 @@ public class ConferenceFunction {
     @Command(msg = "예약", function = "conferenceReserveList", parent = "conferenceList")
     public String conferenceReserveList(MessageRequest messageRequest) {
         log.debug("conferenceReserveList start messageRequest : {}", messageRequest.toString());
-
-
-        //예약 가능 목록 리스트 +
         return Message.CONFERENCE_RESERVE;
     }
 
@@ -103,6 +101,8 @@ public class ConferenceFunction {
     public String reserve(MessageRequest messageRequest) {
         log.debug("reserve start messageRequest : {}", messageRequest.toString());
         //param ex ) t1, 이름, R&D회의
+        ConferenceReserveDto conferenceReserveDto = new ConferenceReserveDto();
+        ConferenceReserve conferenceReserve = conferenceService.reserve(conferenceReserveDto);
 
         return Message.CONFERENCE_RESERVE_SUCC;
     }

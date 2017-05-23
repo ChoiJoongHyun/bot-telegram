@@ -36,30 +36,34 @@ public class CommandAspect {
             throw new UserHandlerException(GeneralCode.NO_EXIST_COMMAND);
         }
 
-        String roomKey = null;
+        MessageRequest mr = null;
         for(Object obj : joinPoint.getArgs()) {
             if(obj instanceof MessageRequest) {
-                roomKey = ((MessageRequest) obj).getRoomKey();
+                mr = new MessageRequest(((MessageRequest) obj).getRoomKey(), ((MessageRequest) obj).getMsg());
             }
         }
 
-        if(roomKey == null) {
+        if(mr == null) {
+            throw new UserHandlerException(GeneralCode.NO_ROOM_KEY);
+        }
+
+        if(mr.getRoomKey() == null || mr.getRoomKey().equals("")) {
             throw new UserHandlerException(GeneralCode.NO_ROOM_KEY);
         }
 
         if(command.function().equals("#wakeup!")) {
-            redisHelper.delete(String.valueOf(roomKey));
+            redisHelper.delete(String.valueOf(mr.getRoomKey()));
         }
 
-        //redis push (실행한 function . no parma)
-        ConversationInfo conversationInfo = ConversationUtils.paramToObject(command.function());
-        redisHelper.push(String.valueOf(roomKey), ConversationUtils.objectToString(conversationInfo));
+        //redis push
+        ConversationInfo conversationInfo = ConversationUtils.paramToObject(command.function(),mr.getMsg());
+        redisHelper.push(String.valueOf(mr.getRoomKey()), ConversationUtils.objectToString(conversationInfo));
 
         try {
             return joinPoint.proceed();
         } catch (UserHandlerException ue) {
             //TODO redis pop or delete
-            redisHelper.pop(String.valueOf(roomKey));
+            redisHelper.pop(String.valueOf(mr.getRoomKey()));
             return ue.getCode() + " : " + ue.getMessage() + "(" + ue.getAddMsg() + ")";
         }
     }

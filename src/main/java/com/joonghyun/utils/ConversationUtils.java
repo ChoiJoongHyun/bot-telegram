@@ -44,16 +44,23 @@ public class ConversationUtils {
         return redis;
     }
 
-    public static ConversationInfo paramToObject(String function, Param... params) {
-        ConversationInfo redis = new ConversationInfo();
-        redis.setFunction(function);
+//    public static ConversationInfo paramToObject(String function, Param... params) {
+//        ConversationInfo redis = new ConversationInfo();
+//        redis.setFunction(function);
+//
+//        Map<String, String> map = new HashMap<>();
+//        for(Param param : params) {
+//            map.put(param.getKey(), param.getValue());
+//        }
+//        redis.setParam(map);
+//
+//        return redis;
+//    }
 
-        Map<String, String> map = new HashMap<>();
-        for(Param param : params) {
-            map.put(param.getKey(), param.getValue());
-        }
-        redis.setParam(map);
-
-        return redis;
+    public static ConversationInfo paramToObject(String function, String msg) {
+        ConversationInfo conversationInfo = new ConversationInfo();
+        conversationInfo.setFunction(function);
+        conversationInfo.setMsg(msg);
+        return conversationInfo;
     }
 }
