@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by joonghyun on 2017. 5. 3..
@@ -24,16 +25,19 @@ public class RedisHelper {
 
     public void push(String roomKey, String value) {
         log.debug("Redis push roomKey : {}, value : {} ", roomKey, value);
+        redisTemplate.expire(roomKey, 30, TimeUnit.SECONDS);
         listOperations.rightPush(roomKey, value);
     }
 
     public String pop(String roomKey) {
+        redisTemplate.expire(roomKey, 30, TimeUnit.SECONDS);
         String value = listOperations.rightPop(roomKey);
         log.debug("Redis pop roomKey : {}, value : {} ", roomKey, value);
         return value;
     }
 
     public String peek(String roomKey) {
+        redisTemplate.expire(roomKey, 30, TimeUnit.SECONDS);
         String value = listOperations.index(roomKey, listOperations.size(roomKey) - 1);
         log.debug("Redis peek roomKey : {}, value : {} ", roomKey, value);
         return value;
