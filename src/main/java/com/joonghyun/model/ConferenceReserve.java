@@ -36,8 +36,8 @@ public class ConferenceReserve {
     @Column(name="cancel_name")
     private String cancelName;
 
-    @Column(name="delete", columnDefinition = "boolean default false")
-    private Boolean delete;
+    @Column(name="del", columnDefinition = "boolean default false")
+    private boolean del;
 
     public enum TimeZone {
         T9("9시 ~ 10시")
@@ -84,7 +84,7 @@ public class ConferenceReserve {
                 ", reserveName='" + reserveName + '\'' +
                 ", cancelReason='" + cancelReason + '\'' +
                 ", cancelName='" + cancelName + '\'' +
-                ", delete=" + delete +
+                ", del=" + del +
                 '}';
     }
 
@@ -192,11 +192,11 @@ public class ConferenceReserve {
         this.cancelName = cancelName;
     }
 
-    public Boolean getDelete() {
-        return delete;
+    public boolean isDel() {
+        return del;
     }
 
-    public void setDelete(Boolean delete) {
-        this.delete = delete;
+    public void setDel(boolean del) {
+        this.del = del;
     }
 }

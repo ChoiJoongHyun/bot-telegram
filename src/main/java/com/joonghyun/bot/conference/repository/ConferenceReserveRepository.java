@@ -12,7 +12,9 @@ import java.util.List;
 public interface ConferenceReserveRepository extends JpaRepository<ConferenceReserve, Integer> {
 
 
+    List<ConferenceReserve> findAllByDateAndConferenceAndDelOrderByTimeZone(String date, Conference conference, Boolean delete);
     List<ConferenceReserve> findAllByDateAndConferenceOrderByTimeZone(String date, Conference conference);
+
 
     ConferenceReserve findAllByDateAndConferenceAndTimeZone(String date, Conference conference, ConferenceReserve.TimeZone timeZone);
 

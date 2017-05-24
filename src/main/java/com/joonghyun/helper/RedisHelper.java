@@ -47,4 +47,10 @@ public class RedisHelper {
         log.debug("Redis delete roomKey : {}", roomKey);
         redisTemplate.opsForValue().getOperations().delete(roomKey);
     }
+
+    public String getIndex(String roomKey, int length) {
+        String value = listOperations.index(roomKey, length);
+        log.debug("Redis get[{}] roomeKey : {}, value : {}", length, roomKey, value);
+        return value;
+    }
 }

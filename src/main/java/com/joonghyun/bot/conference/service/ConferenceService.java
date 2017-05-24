@@ -65,6 +65,7 @@ public class ConferenceService {
         }
         return conference;
     }
+
     /**
      * 회의실
      * */
@@ -72,16 +73,15 @@ public class ConferenceService {
         return conferenceReserveRepository.findAllByDateAndConferenceAndTimeZone(date, conference, timeZone);
     }
 
-
-
-
     /**
      * 해당 날짜의 특정 회의실 전체 목록
      * String zone, String date
      * */
     public List<ConferenceReserve> allList(ConferenceReserveDto conferenceReserveDto) {
+//        List<ConferenceReserve> conferenceReserveList =
+//                conferenceReserveRepository.findAllByDateAndConferenceAndDeleteOrderByTimeZone(conferenceReserveDto.getDate(), getConference(conferenceReserveDto.getZone()), false);
         List<ConferenceReserve> conferenceReserveList =
-                conferenceReserveRepository.findAllByDateAndConferenceOrderByTimeZone(conferenceReserveDto.getDate(), getConference(conferenceReserveDto.getZone()));
+                conferenceReserveRepository.findAllByDateAndConferenceAndDelOrderByTimeZone(conferenceReserveDto.getDate(), getConference(conferenceReserveDto.getZone()), false);
         System.out.println(conferenceReserveList.size());
         return conferenceReserveList;
     }
@@ -100,7 +100,7 @@ public class ConferenceService {
 ;
         conferenceReserve.setCancelName(conferenceReserveDto.getCancelName());
         conferenceReserve.setCancelReason(conferenceReserveDto.getCancelReason());
-        conferenceReserve.setDelete(true);
+        conferenceReserve.setDel(true);
 
         return conferenceReserveRepository.save(conferenceReserve);
     }
