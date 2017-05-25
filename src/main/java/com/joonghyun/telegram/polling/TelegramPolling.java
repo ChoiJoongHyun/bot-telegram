@@ -46,11 +46,14 @@ public class TelegramPolling extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "UltraDemoBot";
+        //return "UltraDemoBot";
+        return "iparking_bot";
+        //{"ok":true,"result":{"id":292023131,"first_name":"iParkingBot","username":"iparking_bot"}}
     }
 
     @Override
     public String getBotToken() {
-        return "303523137:AAG4OXaFUdB91Jde5u__e4WRC2LfDyre7n4";
+        //return "303523137:AAG4OXaFUdB91Jde5u__e4WRC2LfDyre7n4";
+        return "292023131:AAFR9TRGMchV4Jsq6pZPL6L7a8cSnK0VyHc";
     }
 }

@@ -26,7 +26,7 @@ public class MessageDispatchTest {
 
     @Test
     public void message_최초시작() throws Exception {
-        String result = messageDispatch.message(ROOM_KEY, "#wakeup!");
+        String result = messageDispatch.message(ROOM_KEY, "#안녕봇");
         Assert.assertEquals(WakeupFunction.Message.WAKEUP, result);
     }
 

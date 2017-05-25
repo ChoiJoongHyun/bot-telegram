@@ -52,31 +52,20 @@ public class ConferenceFunction {
         return Message.CONFERENCE;
     }
 
+
     @Command(function = "conferenceList", parent = "conference")
     public String conferenceList(MessageRequest messageRequest) {
         log.debug("conferenceList start messageRequest : {}", messageRequest.toString());
         ConferenceReserveDto conferenceReserveDto = getConferenceReserveDto(messageRequest.getMsg());
 
-        List<ConferenceReserve> conferenceReserveList = conferenceService.allList(conferenceReserveDto);
+        final List<ConferenceReserve> conferenceReserveList = conferenceService.allList(conferenceReserveDto);
 
-        final StringBuilder sb = new StringBuilder();
-        for(ConferenceReserve.TimeZone d : ConferenceReserve.TimeZone.values()) {
-            if(conferenceReserveList.isEmpty()) {
-                sb.append("[").append(d.name()).append("] ").append(d.getDescript()).append(":").append("\n");
-            } else {
-                for(ConferenceReserve conferenceReserve : conferenceReserveList) {
-                    if(d.name().equals(conferenceReserve.getTimeZone().name())) {
-                        sb.append(conferenceReserve.toShortString()).append("\n");
-                        break;
-                    } else {
-                        sb.append("[").append(d.name()).append("] ").append(d.getDescript()).append(":").append("\n");
-                        break;
-                    }
-                }
-            }
-        }
+        final StringBuilder sb = conferenceList(conferenceReserveList);
+
         return "날짜 : " + conferenceReserveDto.getDate() + "\n" + sb.toString() + Message.CONFERENCE_LIST;
     }
+
+
 
     @Command(msg = "예약", function = "conferenceReserveList", parent = "conferenceList")
     public String conferenceReserveList(MessageRequest messageRequest) {
@@ -106,9 +95,17 @@ public class ConferenceFunction {
 
         ConferenceReserve conferenceReserve = conferenceService.reserve(conferenceReserveDto);
 
+        //최종 회의실 현황.
+        final List<ConferenceReserve> conferenceReserveList = conferenceService.allList(conferenceReserveDto);
+        final StringBuilder sb = conferenceList(conferenceReserveList);
+
+        redisHelper.delete(messageRequest.getRoomKey());    //회의실 마지막 명령어, 레디스 삭제
         return conferenceReserve.getTimeZone().getDescript()
                 + " " + conferenceReserve.getReserveName()
-                + "\n" + Message.CONFERENCE_RESERVE_SUCC;
+                + "\n" + Message.CONFERENCE_RESERVE_SUCC
+                + "\n\n[회의실 현황]" + " 날짜 : " + conferenceReserveDto.getDate()
+                + "\n" + sb.toString()
+                + "\n\nBye Bye~ 즐거운 회의 되세요!";
     }
 
     @Command(msg = "취소", function = "conferenceCancelList", parent = "conferenceList")
@@ -142,9 +139,17 @@ public class ConferenceFunction {
 
         ConferenceReserve conferenceReserve = conferenceService.cancel(conferenceReserveDto);
 
+        //최종 회의실 현황.
+        final List<ConferenceReserve> conferenceReserveList = conferenceService.allList(conferenceReserveDto);
+        final StringBuilder sb = conferenceList(conferenceReserveList);
+
+        redisHelper.delete(messageRequest.getRoomKey());    //회의실 마지막 명령어. 레디스 모두 삭제.
         return conferenceReserve.getTimeZone().getDescript()
                 + " " + conferenceReserve.getReserveName()
-                + "\n" + Message.CONFERENCE_CANCEL_SUCC;
+                + "\n" + Message.CONFERENCE_CANCEL_SUCC
+                + "\n\n[회의실 현황]" + " 날짜 : " + conferenceReserveDto.getDate()
+                + "\n" + sb.toString()
+                + "\n\nBye Bye~ 다음에 또 불러주세요";
     }
 
     private ConferenceReserveDto getConferenceReserveDto(String firstMsg) {
@@ -161,5 +166,25 @@ public class ConferenceFunction {
             conferenceReserveDto.setDate(msgs[1]);
         }
         return conferenceReserveDto;
+    }
+
+    private StringBuilder conferenceList(List<ConferenceReserve> conferenceReserveList) {
+        final StringBuilder sb = new StringBuilder();
+        for(ConferenceReserve.TimeZone d : ConferenceReserve.TimeZone.values()) {
+            if(conferenceReserveList.isEmpty()) {
+                sb.append("[").append(d.name()).append("] ").append(d.getDescript()).append(":").append("\n");
+            } else {
+                for(ConferenceReserve conferenceReserve : conferenceReserveList) {
+                    if(d.name().equals(conferenceReserve.getTimeZone().name())) {
+                        sb.append(conferenceReserve.toShortString()).append("\n");
+                        break;
+                    } else {
+                        sb.append("[").append(d.name()).append("] ").append(d.getDescript()).append(":").append("\n");
+                        break;
+                    }
+                }
+            }
+        }
+        return sb;
     }
 }

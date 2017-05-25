@@ -117,10 +117,14 @@ public class MessageDispatch {
             MessageRequest messageRequest = new MessageRequest(String.valueOf(roomKey), msg);
 
             if(conversationInfo == null) {
-                if(!"#wakeup!".equals(msg)) {
+                if(!"#안녕봇".equals(msg)) {
                     return null;
                 }
                 return commanderMap.get("wakeup").execute(messageRequest);
+            }
+
+            if("#잘가봇".equals(msg)) {
+                return commanderMap.get("goodbye").execute(messageRequest);
             }
 
             //최 하위 기능을 사용하였을경우 parent 값이 없으므로 null 이 되며 TODO redis 초기화 하면 될것 같다.

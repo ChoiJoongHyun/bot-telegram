@@ -51,7 +51,7 @@ public class CommandAspect {
             throw new UserHandlerException(GeneralCode.NO_ROOM_KEY);
         }
 
-        if(command.function().equals("#wakeup!")) {
+        if(command.function().equals("wakeup")) {
             redisHelper.delete(String.valueOf(mr.getRoomKey()));
         }
 
@@ -62,12 +62,9 @@ public class CommandAspect {
         try {
             return joinPoint.proceed();
         } catch (UserHandlerException ue) {
-
-            System.out.println("cjh userexception");
             redisHelper.pop(String.valueOf(mr.getRoomKey()));
             return ue.getCode() + " : " + ue.getMessage() + "(" + ue.getAddMsg() + ")";
         } catch (Exception e) {
-            System.out.println("cjh exception");
             redisHelper.pop(String.valueOf(mr.getRoomKey()));
             e.printStackTrace();
             return e.getMessage();
