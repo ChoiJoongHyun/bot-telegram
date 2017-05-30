@@ -13,6 +13,8 @@ public interface ConferenceReserveRepository extends JpaRepository<ConferenceRes
 
 
     List<ConferenceReserve> findAllByDateAndConferenceAndDelOrderByTimeZone(String date, Conference conference, Boolean delete);
+
+
     List<ConferenceReserve> findAllByDateAndConferenceOrderByTimeZone(String date, Conference conference);
 
 
