@@ -7,7 +7,9 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -52,5 +54,13 @@ public class RedisHelper {
         String value = listOperations.index(roomKey, length);
         log.debug("Redis get[{}] roomeKey : {}, value : {}", length, roomKey, value);
         return value;
+    }
+
+    @PostConstruct
+    public void redisDeleteAllKey() {
+        Set<String> redisKeys = redisTemplate.keys("*");
+        for(String key : redisKeys) {
+            delete(key);
+        }
     }
 }
